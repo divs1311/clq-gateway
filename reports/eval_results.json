@@ -1,0 +1,1155 @@
+{
+ "mode": "mock",
+ "simulated": true,
+ "alpha": 0.7,
+ "production_weights": {
+  "easy": 1.1666666666666667,
+  "medium": 0.88,
+  "hard": 0.5333333333333333
+ },
+ "summary": {
+  "single:small": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.55,
+    "silent_error_rate": 0.205,
+    "validator_handoff_rate": 0.245,
+    "human_handoff_rate": 0.265,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 0.1005445,
+    "latency_ms": {
+     "p50": 250.4,
+     "p90": 480.6,
+     "p95": 598.3,
+     "p99": 832.1
+    },
+    "final_tier_share": {
+     "small": 1.0,
+     "mid": 0.0,
+     "frontier": 0.0
+    },
+    "attempts_per_request": 1.0,
+    "pass_ci95": [
+     0.4807561508414703,
+     0.6173593164916334
+    ],
+    "true_pass_rate_simulated": 0.595,
+    "true_silent_error_rate_simulated": 0.16
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.6187333333333336,
+    "silent_error_rate": 0.1845666666666665,
+    "validator_handoff_rate": 0.19669999999999987,
+    "human_handoff_rate": 0.2073666666666665,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 0.10040738333333331,
+    "latency_ms": {
+     "p50": 244.7,
+     "p90": 480.6,
+     "p95": 598.3,
+     "p99": 832.1
+    },
+    "final_tier_share": {
+     "small": 0.9999999999999991,
+     "mid": 0.0,
+     "frontier": 0.0
+    },
+    "attempts_per_request": 0.9999999999999991,
+    "true_pass_rate_simulated": 0.6712333333333339,
+    "true_silent_error_rate_simulated": 0.13206666666666675,
+    "fully_loaded_per_1k_usd": 2175.0004073833343
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.7833333333333333,
+     "silent_error_rate": 0.125,
+     "handoff_rate": 0.09166666666666666
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.32,
+     "silent_error_rate": 0.32,
+     "handoff_rate": 0.36
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.0,
+     "silent_error_rate": 0.3333333333333333,
+     "handoff_rate": 0.6666666666666666
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 9,
+    "b_only": 63,
+    "discordant": 72,
+    "p_value": 4.181227909275131e-11
+   }
+  },
+  "single:mid": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.735,
+    "silent_error_rate": 0.09,
+    "validator_handoff_rate": 0.175,
+    "human_handoff_rate": 0.23,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 1.0159850000000004,
+    "latency_ms": {
+     "p50": 903.8,
+     "p90": 1646.6,
+     "p95": 1939.3,
+     "p99": 2498.0
+    },
+    "final_tier_share": {
+     "small": 0.0,
+     "mid": 1.0,
+     "frontier": 0.0
+    },
+    "attempts_per_request": 1.0,
+    "pass_ci95": [
+     0.669824237532593,
+     0.7913184589329944
+    ],
+    "true_pass_rate_simulated": 0.785,
+    "true_silent_error_rate_simulated": 0.04
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.7756666666666666,
+    "silent_error_rate": 0.07566666666666669,
+    "validator_handoff_rate": 0.14866666666666675,
+    "human_handoff_rate": 0.17800000000000005,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 1.0154067666666673,
+    "latency_ms": {
+     "p50": 913.0,
+     "p90": 1723.8,
+     "p95": 2086.0,
+     "p99": 2747.0
+    },
+    "final_tier_share": {
+     "small": 0.0,
+     "mid": 0.9999999999999991,
+     "frontier": 0.0
+    },
+    "attempts_per_request": 0.9999999999999991,
+    "true_pass_rate_simulated": 0.8248000000000001,
+    "true_silent_error_rate_simulated": 0.026533333333333332,
+    "fully_loaded_per_1k_usd": 765.4154067666668
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.85,
+     "silent_error_rate": 0.05,
+     "handoff_rate": 0.1
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.7,
+     "silent_error_rate": 0.1,
+     "handoff_rate": 0.2
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.3333333333333333,
+     "silent_error_rate": 0.23333333333333334,
+     "handoff_rate": 0.43333333333333335
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 9,
+    "b_only": 26,
+    "discordant": 35,
+    "p_value": 0.005988120567053557
+   }
+  },
+  "single:frontier": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.82,
+    "silent_error_rate": 0.09,
+    "validator_handoff_rate": 0.09,
+    "human_handoff_rate": 0.165,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 3.3479250000000036,
+    "latency_ms": {
+     "p50": 2973.5,
+     "p90": 6174.3,
+     "p95": 7226.7,
+     "p99": 9920.8
+    },
+    "final_tier_share": {
+     "small": 0.0,
+     "mid": 0.0,
+     "frontier": 1.0
+    },
+    "attempts_per_request": 1.0,
+    "pass_ci95": [
+     0.7608852492032754,
+     0.8670537417285882
+    ],
+    "true_pass_rate_simulated": 0.875,
+    "true_silent_error_rate_simulated": 0.035
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.8377333333333331,
+    "silent_error_rate": 0.08170000000000002,
+    "validator_handoff_rate": 0.0805666666666667,
+    "human_handoff_rate": 0.12056666666666682,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 3.326627300000002,
+    "latency_ms": {
+     "p50": 2950.6,
+     "p90": 6174.3,
+     "p95": 7226.7,
+     "p99": 10077.4
+    },
+    "final_tier_share": {
+     "small": 0.0,
+     "mid": 0.0,
+     "frontier": 0.9999999999999991
+    },
+    "attempts_per_request": 0.9999999999999991,
+    "true_pass_rate_simulated": 0.8941333333333331,
+    "true_silent_error_rate_simulated": 0.0253,
+    "fully_loaded_per_1k_usd": 548.6266273000001
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.8666666666666667,
+     "silent_error_rate": 0.075,
+     "handoff_rate": 0.058333333333333334
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.82,
+     "silent_error_rate": 0.06,
+     "handoff_rate": 0.12
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.6333333333333333,
+     "silent_error_rate": 0.2,
+     "handoff_rate": 0.16666666666666666
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 0,
+    "b_only": 0,
+    "discordant": 0,
+    "p_value": 1.0
+   }
+  },
+  "static_router": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.75,
+    "silent_error_rate": 0.125,
+    "validator_handoff_rate": 0.125,
+    "human_handoff_rate": 0.2,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 1.0428980000000003,
+    "latency_ms": {
+     "p50": 700.1,
+     "p90": 2834.1,
+     "p95": 4311.3,
+     "p99": 7256.7
+    },
+    "final_tier_share": {
+     "small": 0.4,
+     "mid": 0.44,
+     "frontier": 0.16
+    },
+    "attempts_per_request": 1.0,
+    "pass_ci95": [
+     0.6856590163422495,
+     0.8049183203232689
+    ],
+    "true_pass_rate_simulated": 0.81,
+    "true_silent_error_rate_simulated": 0.065
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.7646666666666664,
+    "silent_error_rate": 0.11966666666666669,
+    "validator_handoff_rate": 0.1156666666666667,
+    "human_handoff_rate": 0.15566666666666681,
+    "escalation_rate": 0.0,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 0.8235764333333334,
+    "latency_ms": {
+     "p50": 591.6,
+     "p90": 2055.8,
+     "p95": 3124.5,
+     "p99": 6437.1
+    },
+    "final_tier_share": {
+     "small": 0.466666666666667,
+     "mid": 0.44166666666666626,
+     "frontier": 0.0916666666666667
+    },
+    "attempts_per_request": 0.9999999999999991,
+    "true_pass_rate_simulated": 0.8254666666666666,
+    "true_silent_error_rate_simulated": 0.05886666666666668,
+    "fully_loaded_per_1k_usd": 1054.2235764333336
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.8,
+     "silent_error_rate": 0.11666666666666667,
+     "handoff_rate": 0.08333333333333333
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.7,
+     "silent_error_rate": 0.1,
+     "handoff_rate": 0.2
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.6333333333333333,
+     "silent_error_rate": 0.2,
+     "handoff_rate": 0.16666666666666666
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 8,
+    "b_only": 22,
+    "discordant": 30,
+    "p_value": 0.016124801710247997
+   }
+  },
+  "cheap_first": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.72,
+    "silent_error_rate": 0.265,
+    "validator_handoff_rate": 0.015,
+    "human_handoff_rate": 0.075,
+    "escalation_rate": 0.245,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 0.6278094999999997,
+    "latency_ms": {
+     "p50": 286.2,
+     "p90": 1974.4,
+     "p95": 3388.0,
+     "p99": 5875.7
+    },
+    "final_tier_share": {
+     "small": 0.755,
+     "mid": 0.17,
+     "frontier": 0.075
+    },
+    "attempts_per_request": 1.32,
+    "pass_ci95": [
+     0.6540769535890598,
+     0.7776311026765965
+    ],
+    "true_pass_rate_simulated": 0.78,
+    "true_silent_error_rate_simulated": 0.205
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.7618666666666668,
+    "silent_error_rate": 0.22839999999999985,
+    "validator_handoff_rate": 0.009733333333333333,
+    "human_handoff_rate": 0.04173333333333333,
+    "escalation_rate": 0.19669999999999987,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 0.5117240499999999,
+    "latency_ms": {
+     "p50": 278.2,
+     "p90": 1694.5,
+     "p95": 3084.4,
+     "p99": 8235.9
+    },
+    "final_tier_share": {
+     "small": 0.8033000000000002,
+     "mid": 0.14026666666666676,
+     "frontier": 0.05643333333333333
+    },
+    "attempts_per_request": 1.2531333333333312,
+    "true_pass_rate_simulated": 0.8272666666666667,
+    "true_silent_error_rate_simulated": 0.1630000000000001,
+    "fully_loaded_per_1k_usd": 1985.7117240500008
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.8666666666666667,
+     "silent_error_rate": 0.13333333333333333,
+     "handoff_rate": 0.0
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.56,
+     "silent_error_rate": 0.42,
+     "handoff_rate": 0.02
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.4,
+     "silent_error_rate": 0.5333333333333333,
+     "handoff_rate": 0.06666666666666667
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 10,
+    "b_only": 30,
+    "discordant": 40,
+    "p_value": 0.0022214337732293643
+   }
+  },
+  "cascade": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "validator_handoff_rate": 0.045,
+    "human_handoff_rate": 0.12,
+    "escalation_rate": 0.1,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 1.3744230000000006,
+    "latency_ms": {
+     "p50": 770.9,
+     "p90": 4229.1,
+     "p95": 5809.9,
+     "p99": 7839.7
+    },
+    "final_tier_share": {
+     "small": 0.375,
+     "mid": 0.38,
+     "frontier": 0.245
+    },
+    "attempts_per_request": 1.11,
+    "pass_ci95": [
+     0.7499876124094632,
+     0.8583282850557797
+    ],
+    "true_pass_rate_simulated": 0.88,
+    "true_silent_error_rate_simulated": 0.075
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.8289333333333332,
+    "silent_error_rate": 0.14013333333333336,
+    "validator_handoff_rate": 0.030933333333333334,
+    "human_handoff_rate": 0.07093333333333333,
+    "escalation_rate": 0.10233333333333333,
+    "cache_hit_rate": 0.0,
+    "cost_per_1k_usd": 1.1539052,
+    "latency_ms": {
+     "p50": 673.7,
+     "p90": 3206.1,
+     "p95": 5452.5,
+     "p99": 7839.7
+    },
+    "final_tier_share": {
+     "small": 0.4375000000000002,
+     "mid": 0.38599999999999995,
+     "frontier": 0.17650000000000013
+    },
+    "attempts_per_request": 1.1139999999999983,
+    "true_pass_rate_simulated": 0.9013999999999998,
+    "true_silent_error_rate_simulated": 0.06766666666666668,
+    "fully_loaded_per_1k_usd": 905.9539052000002
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.8666666666666667,
+     "silent_error_rate": 0.13333333333333333,
+     "handoff_rate": 0.0
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.78,
+     "silent_error_rate": 0.14,
+     "handoff_rate": 0.08
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.6333333333333333,
+     "silent_error_rate": 0.2,
+     "handoff_rate": 0.16666666666666666
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 8,
+    "b_only": 10,
+    "discordant": 18,
+    "p_value": 0.8145294189453125
+   }
+  },
+  "cascade+cache": {
+   "golden_mix": {
+    "n": 200,
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "validator_handoff_rate": 0.045,
+    "human_handoff_rate": 0.12,
+    "escalation_rate": 0.1,
+    "cache_hit_rate": 0.015,
+    "cost_per_1k_usd": 1.3947410000000002,
+    "latency_ms": {
+     "p50": 776.8,
+     "p90": 4246.6,
+     "p95": 5822.6,
+     "p99": 7877.2
+    },
+    "final_tier_share": {
+     "small": 0.37,
+     "mid": 0.37,
+     "frontier": 0.245
+    },
+    "attempts_per_request": 1.095,
+    "pass_ci95": [
+     0.7499876124094632,
+     0.8583282850557797
+    ],
+    "true_pass_rate_simulated": 0.88,
+    "true_silent_error_rate_simulated": 0.075
+   },
+   "production_mix": {
+    "n": 200,
+    "pass_rate": 0.8289333333333332,
+    "silent_error_rate": 0.14013333333333336,
+    "validator_handoff_rate": 0.030933333333333334,
+    "human_handoff_rate": 0.07093333333333333,
+    "escalation_rate": 0.10233333333333333,
+    "cache_hit_rate": 0.0175,
+    "cost_per_1k_usd": 1.1726095333333335,
+    "latency_ms": {
+     "p50": 690.7,
+     "p90": 3228.6,
+     "p95": 5490.3,
+     "p99": 7877.2
+    },
+    "final_tier_share": {
+     "small": 0.43166666666666687,
+     "mid": 0.37433333333333335,
+     "frontier": 0.17650000000000013
+    },
+    "attempts_per_request": 1.0964999999999985,
+    "true_pass_rate_simulated": 0.9013999999999998,
+    "true_silent_error_rate_simulated": 0.06766666666666668,
+    "fully_loaded_per_1k_usd": 905.9726095333335
+   },
+   "by_stratum": {
+    "routine": {
+     "n": 120,
+     "pass_rate": 0.8666666666666667,
+     "silent_error_rate": 0.13333333333333333,
+     "handoff_rate": 0.0
+    },
+    "multi_hop": {
+     "n": 50,
+     "pass_rate": 0.78,
+     "silent_error_rate": 0.14,
+     "handoff_rate": 0.08
+    },
+    "adversarial": {
+     "n": 30,
+     "pass_rate": 0.6333333333333333,
+     "silent_error_rate": 0.2,
+     "handoff_rate": 0.16666666666666666
+    }
+   },
+   "vs_frontier_mcnemar": {
+    "a_only": 8,
+    "b_only": 10,
+    "discordant": 18,
+    "p_value": 0.8145294189453125
+   }
+  }
+ },
+ "router": {
+  "query_plus_context": {
+   "accuracy": 0.87,
+   "confusion_rows_true_cols_pred": [
+    [
+     119,
+     1,
+     0
+    ],
+    [
+     10,
+     40,
+     0
+    ],
+    [
+     15,
+     0,
+     15
+    ]
+   ],
+   "row_normalised": [
+    [
+     0.9917,
+     0.0083,
+     0.0
+    ],
+    [
+     0.2,
+     0.8,
+     0.0
+    ],
+    [
+     0.5,
+     0.0,
+     0.5
+    ]
+   ],
+   "routed_tier_counts_at_alpha": {
+    "small": 80,
+    "mid": 88,
+    "frontier": 32
+   }
+  },
+  "query_only": {
+   "accuracy": 0.885,
+   "confusion_rows_true_cols_pred": [
+    [
+     120,
+     0,
+     0
+    ],
+    [
+     9,
+     41,
+     0
+    ],
+    [
+     14,
+     0,
+     16
+    ]
+   ],
+   "row_normalised": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.18,
+     0.82,
+     0.0
+    ],
+    [
+     0.4667,
+     0.0,
+     0.5333
+    ]
+   ],
+   "routed_tier_counts_at_alpha": {
+    "small": 97,
+    "mid": 67,
+    "frontier": 36
+   }
+  },
+  "hard_routing_without_risk_rules": {
+   "small": 4,
+   "mid": 6,
+   "frontier": 20
+  },
+  "risk_rules": {
+   "adversarial_flagged": 30,
+   "adversarial_total": 30,
+   "non_adversarial_flagged": 0,
+   "non_adversarial_total": 170,
+   "caveat": "Rules were written with knowledge of the golden-set attack categories; validate on a held-out red-team set."
+  }
+ },
+ "validator": {
+  "small": {
+   "recall_on_wrong": 0.5675675675675675,
+   "n_wrong": 74,
+   "false_flag_rate_on_correct": 0.05555555555555555,
+   "n_correct": 126,
+   "flag_reasons": {
+    "LOW_CONFIDENCE": 34,
+    "SCHEMA_INVALID": 9,
+    "TENANT_VIOLATION": 6,
+    "DISALLOWED_TOOL": 6,
+    "MISSING_CITATION": 5,
+    "FORBIDDEN_PATTERN": 2
+   }
+  },
+  "mid": {
+   "recall_on_wrong": 0.7575757575757576,
+   "n_wrong": 33,
+   "false_flag_rate_on_correct": 0.059880239520958084,
+   "n_correct": 167,
+   "flag_reasons": {
+    "LOW_CONFIDENCE": 25,
+    "TENANT_VIOLATION": 5,
+    "MISSING_CITATION": 5,
+    "DISALLOWED_TOOL": 5,
+    "SCHEMA_INVALID": 2,
+    "FORBIDDEN_PATTERN": 1
+   }
+  },
+  "frontier": {
+   "recall_on_wrong": 0.5333333333333333,
+   "n_wrong": 15,
+   "false_flag_rate_on_correct": 0.05405405405405406,
+   "n_correct": 185,
+   "flag_reasons": {
+    "LOW_CONFIDENCE": 15,
+    "MISSING_CITATION": 2,
+    "DISALLOWED_TOOL": 1,
+    "SCHEMA_INVALID": 1,
+    "TENANT_VIOLATION": 1
+   }
+  }
+ },
+ "calibration": {
+  "kappa": 0.6497005988023952,
+  "ci_low": 0.48684210526315796,
+  "ci_high": 0.7846888694127957,
+  "raw_agreement": 0.9423076923076923,
+  "n": 312,
+  "judge_false_pass_rate_on_ungrounded": {
+   "short_replies": 0.0,
+   "n_short": 11,
+   "long_replies": 0.1111111111111111,
+   "n_long": 9
+  },
+  "judge_false_fail_rate_on_grounded": 0.05821917808219178,
+  "gate": {
+   "min_point": 0.8,
+   "min_ci_low": 0.7,
+   "passed": false
+  },
+  "note": "SIMULATED judge vs SIMULATED human labels; replace with real labels before quoting."
+ },
+ "pairwise": {
+  "compared": 58,
+  "swap_consistent": 33,
+  "swap_consistency_rate": 0.5689655172413793,
+  "candidate_wins": 0,
+  "baseline_wins": 3,
+  "ties": 30,
+  "candidate": "cascade+cache",
+  "baseline": "single:frontier"
+ },
+ "error_analysis": {
+  "single:small": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 24,
+    "WRONG_TOOL_ARGS": 7,
+    "ESCALATION_ERROR": 6,
+    "WRONG_ROOT_CAUSE": 4
+   },
+   "n_silent": 41,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 34,
+    "SCHEMA_INVALID": 9,
+    "TENANT_VIOLATION": 6,
+    "DISALLOWED_TOOL": 6,
+    "MISSING_CITATION": 5,
+    "FORBIDDEN_PATTERN": 2
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 15,
+    "WRONG_TOOL_ARGS": 7,
+    "ESCALATION_ERROR": 6,
+    "WRONG_ROOT_CAUSE": 4
+   },
+   "n_true_silent": 32,
+   "judge_false_fails": 10
+  },
+  "single:mid": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 14,
+    "ESCALATION_ERROR": 3,
+    "WRONG_ROOT_CAUSE": 1
+   },
+   "n_silent": 18,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 25,
+    "TENANT_VIOLATION": 5,
+    "MISSING_CITATION": 5,
+    "DISALLOWED_TOOL": 5,
+    "SCHEMA_INVALID": 2,
+    "FORBIDDEN_PATTERN": 1
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 4,
+    "ESCALATION_ERROR": 3,
+    "WRONG_ROOT_CAUSE": 1
+   },
+   "n_true_silent": 8,
+   "judge_false_fails": 10
+  },
+  "single:frontier": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 12,
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2
+   },
+   "n_silent": 18,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 15,
+    "MISSING_CITATION": 2,
+    "DISALLOWED_TOOL": 1,
+    "SCHEMA_INVALID": 1,
+    "TENANT_VIOLATION": 1
+   },
+   "true_silent_errors": {
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2,
+    "UNGROUNDED_REPLY": 1
+   },
+   "n_true_silent": 7,
+   "judge_false_fails": 11
+  },
+  "static_router": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 18,
+    "ESCALATION_ERROR": 4,
+    "WRONG_ROOT_CAUSE": 2,
+    "WRONG_TOOL_ARGS": 1
+   },
+   "n_silent": 25,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 17,
+    "SCHEMA_INVALID": 4,
+    "TENANT_VIOLATION": 3,
+    "MISSING_CITATION": 2,
+    "DISALLOWED_TOOL": 1
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 6,
+    "ESCALATION_ERROR": 4,
+    "WRONG_ROOT_CAUSE": 2,
+    "WRONG_TOOL_ARGS": 1
+   },
+   "n_true_silent": 13,
+   "judge_false_fails": 12
+  },
+  "cheap_first": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 30,
+    "ESCALATION_ERROR": 10,
+    "WRONG_TOOL_ARGS": 8,
+    "WRONG_ROOT_CAUSE": 5
+   },
+   "n_silent": 53,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 44,
+    "TENANT_VIOLATION": 11,
+    "SCHEMA_INVALID": 10,
+    "DISALLOWED_TOOL": 10,
+    "MISSING_CITATION": 9,
+    "FORBIDDEN_PATTERN": 2
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 18,
+    "ESCALATION_ERROR": 10,
+    "WRONG_TOOL_ARGS": 8,
+    "WRONG_ROOT_CAUSE": 5
+   },
+   "n_true_silent": 41,
+   "judge_false_fails": 13
+  },
+  "cascade": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 21,
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2,
+    "WRONG_ROOT_CAUSE": 2
+   },
+   "n_silent": 29,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 23,
+    "SCHEMA_INVALID": 4,
+    "TENANT_VIOLATION": 4,
+    "MISSING_CITATION": 2,
+    "DISALLOWED_TOOL": 1
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 7,
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2,
+    "WRONG_ROOT_CAUSE": 2
+   },
+   "n_true_silent": 15,
+   "judge_false_fails": 14
+  },
+  "cascade+cache": {
+   "silent_errors": {
+    "UNGROUNDED_REPLY": 21,
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2,
+    "WRONG_ROOT_CAUSE": 2
+   },
+   "n_silent": 29,
+   "validator_flags": {
+    "LOW_CONFIDENCE": 23,
+    "SCHEMA_INVALID": 4,
+    "TENANT_VIOLATION": 4,
+    "MISSING_CITATION": 2,
+    "DISALLOWED_TOOL": 1
+   },
+   "true_silent_errors": {
+    "UNGROUNDED_REPLY": 7,
+    "ESCALATION_ERROR": 4,
+    "WRONG_TOOL_ARGS": 2,
+    "WRONG_ROOT_CAUSE": 2
+   },
+   "n_true_silent": 15,
+   "judge_false_fails": 14
+  }
+ },
+ "ablations": {
+  "alpha": [
+   {
+    "alpha": 0.5,
+    "pass_rate": 0.79,
+    "silent_error_rate": 0.165,
+    "true_silent_error_rate": 0.095,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 0.8778616266666667,
+    "fully_loaded_per_1k_prod": 1116.8778616266673,
+    "p90_ms_prod": 2896.8,
+    "p95_ms_prod": 4321.4
+   },
+   {
+    "alpha": 0.6,
+    "pass_rate": 0.805,
+    "silent_error_rate": 0.15,
+    "true_silent_error_rate": 0.08,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 0.95934496,
+    "fully_loaded_per_1k_prod": 958.5593449600002,
+    "p90_ms_prod": 2933.6,
+    "p95_ms_prod": 4321.4
+   },
+   {
+    "alpha": 0.7,
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "true_silent_error_rate": 0.075,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1726095333333335,
+    "fully_loaded_per_1k_prod": 905.9726095333335,
+    "p90_ms_prod": 3228.6,
+    "p95_ms_prod": 5490.3
+   },
+   {
+    "alpha": 0.8,
+    "pass_rate": 0.83,
+    "silent_error_rate": 0.125,
+    "true_silent_error_rate": 0.07,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.4690752833333325,
+    "fully_loaded_per_1k_prod": 836.2690752833334,
+    "p90_ms_prod": 3615.0,
+    "p95_ms_prod": 5641.6
+   },
+   {
+    "alpha": 0.9,
+    "pass_rate": 0.83,
+    "silent_error_rate": 0.1,
+    "true_silent_error_rate": 0.045,
+    "handoff_rate": 0.07,
+    "cost_per_1k_prod": 2.138502516666665,
+    "fully_loaded_per_1k_prod": 587.3385025166667,
+    "p90_ms_prod": 4985.2,
+    "p95_ms_prod": 6320.7
+   }
+  ],
+  "router_features": [
+   {
+    "features": "query+context",
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "true_silent_error_rate": 0.075,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1726095333333335,
+    "fully_loaded_per_1k_prod": 905.9726095333335,
+    "p90_ms_prod": 3228.6,
+    "p95_ms_prod": 5490.3
+   },
+   {
+    "features": "query only",
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "true_silent_error_rate": 0.075,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1303231166666672,
+    "fully_loaded_per_1k_prod": 905.9303231166668,
+    "p90_ms_prod": 3228.6,
+    "p95_ms_prod": 5336.7
+   }
+  ],
+  "confidence_threshold": [
+   {
+    "confidence_threshold": 0.5,
+    "pass_rate": 0.815,
+    "silent_error_rate": 0.165,
+    "true_silent_error_rate": 0.095,
+    "handoff_rate": 0.02,
+    "cost_per_1k_prod": 0.959117466666667,
+    "fully_loaded_per_1k_prod": 1073.3591174666674,
+    "p90_ms_prod": 2495.2,
+    "p95_ms_prod": 3615.0
+   },
+   {
+    "confidence_threshold": 0.6,
+    "pass_rate": 0.815,
+    "silent_error_rate": 0.16,
+    "true_silent_error_rate": 0.09,
+    "handoff_rate": 0.025,
+    "cost_per_1k_prod": 0.9762114666666669,
+    "fully_loaded_per_1k_prod": 1033.776211466667,
+    "p90_ms_prod": 2667.2,
+    "p95_ms_prod": 3615.0
+   },
+   {
+    "confidence_threshold": 0.7,
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "true_silent_error_rate": 0.075,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1726095333333335,
+    "fully_loaded_per_1k_prod": 905.9726095333335,
+    "p90_ms_prod": 3228.6,
+    "p95_ms_prod": 5490.3
+   },
+   {
+    "confidence_threshold": 0.8,
+    "pass_rate": 0.74,
+    "silent_error_rate": 0.085,
+    "true_silent_error_rate": 0.035,
+    "handoff_rate": 0.175,
+    "cost_per_1k_prod": 1.9803798,
+    "fully_loaded_per_1k_prod": 796.5803798000003,
+    "p90_ms_prod": 5822.6,
+    "p95_ms_prod": 7282.0
+   }
+  ],
+  "risk_rules": [
+   {
+    "risk_rules": "on",
+    "pass_rate": 0.81,
+    "silent_error_rate": 0.145,
+    "true_silent_error_rate": 0.075,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1726095333333335,
+    "fully_loaded_per_1k_prod": 905.9726095333335,
+    "p90_ms_prod": 3228.6,
+    "p95_ms_prod": 5490.3
+   },
+   {
+    "risk_rules": "off",
+    "pass_rate": 0.8,
+    "silent_error_rate": 0.155,
+    "true_silent_error_rate": 0.085,
+    "handoff_rate": 0.045,
+    "cost_per_1k_prod": 1.1434735333333335,
+    "fully_loaded_per_1k_prod": 969.9434735333335,
+    "p90_ms_prod": 3142.9,
+    "p95_ms_prod": 5490.3
+   }
+  ],
+  "cache_threshold": [
+   {
+    "threshold": 0.4,
+    "howto_hit_rate": 0.46,
+    "howto_hits_correct": 18,
+    "howto_hits_wrong_faq": 5,
+    "false_hits_on_non_howto": 27,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.45,
+    "howto_hit_rate": 0.34,
+    "howto_hits_correct": 15,
+    "howto_hits_wrong_faq": 2,
+    "false_hits_on_non_howto": 12,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.5,
+    "howto_hit_rate": 0.26,
+    "howto_hits_correct": 12,
+    "howto_hits_wrong_faq": 1,
+    "false_hits_on_non_howto": 8,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.55,
+    "howto_hit_rate": 0.18,
+    "howto_hits_correct": 8,
+    "howto_hits_wrong_faq": 1,
+    "false_hits_on_non_howto": 5,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.6,
+    "howto_hit_rate": 0.08,
+    "howto_hits_correct": 4,
+    "howto_hits_wrong_faq": 0,
+    "false_hits_on_non_howto": 0,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.62,
+    "howto_hit_rate": 0.06,
+    "howto_hits_correct": 3,
+    "howto_hits_wrong_faq": 0,
+    "false_hits_on_non_howto": 0,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.65,
+    "howto_hit_rate": 0.06,
+    "howto_hits_correct": 3,
+    "howto_hits_wrong_faq": 0,
+    "false_hits_on_non_howto": 0,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.7,
+    "howto_hit_rate": 0.04,
+    "howto_hits_correct": 2,
+    "howto_hits_wrong_faq": 0,
+    "false_hits_on_non_howto": 0,
+    "n_howto": 50,
+    "n_other": 150
+   },
+   {
+    "threshold": 0.75,
+    "howto_hit_rate": 0.02,
+    "howto_hits_correct": 1,
+    "howto_hits_wrong_faq": 0,
+    "false_hits_on_non_howto": 0,
+    "n_howto": 50,
+    "n_other": 150
+   }
+  ]
+ }
+}

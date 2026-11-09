@@ -1,0 +1,87 @@
+# CLQ Gateway configuration.
+#
+# EVERY NUMBER IN THIS FILE IS AN ASSUMPTION, NOT A MEASUREMENT.
+# Prices are illustrative per-token prices chosen to reflect the typical ~10x
+# step between model tiers. Replace them with your providers' current price
+# sheets before quoting any cost figure. Latency and accuracy priors are only
+# used by (a) the mock provider and (b) the economics simulator defaults.
+# A real eval run (mode: litellm) measures latency, tokens and accuracy instead.
+
+tiers:
+  small:
+    rank: 1
+    model: ${CLQ_SMALL_MODEL}        # e.g. a quantized 8B open-weight model behind an OpenAI-compatible endpoint
+    price_per_mtok_in: 0.10          # USD per 1M input tokens  (assumption)
+    price_per_mtok_out: 0.40         # USD per 1M output tokens (assumption)
+    latency_ms: {median: 250, p95: 600}
+    confidence_threshold: 0.70       # below this the validator flags the answer
+  mid:
+    rank: 2
+    model: ${CLQ_MID_MODEL}          # e.g. a fast mid-tier hosted model
+    price_per_mtok_in: 1.00
+    price_per_mtok_out: 4.00
+    latency_ms: {median: 900, p95: 2000}
+    confidence_threshold: 0.70
+  frontier:
+    rank: 3
+    model: ${CLQ_FRONTIER_MODEL}     # e.g. a frontier reasoning model
+    price_per_mtok_in: 3.00
+    price_per_mtok_out: 15.00
+    latency_ms: {median: 3000, p95: 7000}
+    confidence_threshold: 0.70
+
+overheads:
+  cache_lookup_ms: {median: 20, p95: 45}
+  router_ms: 30
+  validator_ms: 5
+  cache_cost_per_1k: 0.03            # embedding + vector lookup, USD per 1k requests (assumption)
+  router_cost_per_1k: 0.01           # CPU classifier, USD per 1k requests (assumption)
+
+router:
+  alpha: 0.70                        # pick the cheapest tier t with P(difficulty <= t) >= alpha
+  cv_folds: 5
+
+cache:
+  similarity_threshold: 0.62         # cosine; calibrated on the golden set (see reports/ablations.md)
+  eligible_root_causes: [HOW_TO_QUESTION]   # never cache merchant-specific diagnoses
+
+# Mock-provider priors: P(correct | tier, difficulty). Used ONLY by the mock
+# provider and as simulator defaults. Real runs measure these.
+mock_priors:
+  accuracy:
+    small:    {easy: 0.88, medium: 0.50, hard: 0.15}
+    mid:      {easy: 0.95, medium: 0.82, hard: 0.50}
+    frontier: {easy: 0.97, medium: 0.91, hard: 0.80}
+  # Share of failures by mode (sums to 1 within each stratum)
+  failure_modes:
+    routine:     {SCHEMA_CORRUPTION: 0.20, WRONG_ROOT_CAUSE: 0.30, WRONG_TOOL_ARGS: 0.20, UNGROUNDED_REPLY: 0.30}
+    multi_hop:   {SCHEMA_CORRUPTION: 0.15, WRONG_ROOT_CAUSE: 0.25, WRONG_TOOL_ARGS: 0.35, UNGROUNDED_REPLY: 0.25}
+    adversarial: {SCHEMA_CORRUPTION: 0.10, INJECTION_FOLLOWED: 0.40, ESCALATION_ERROR: 0.35, UNGROUNDED_REPLY: 0.15}
+
+# Business assumptions for the economics model (edit for your context).
+business:
+  monthly_tickets: 400000
+  production_mix: {easy: 0.70, medium: 0.22, hard: 0.08}   # NOT the golden-set mix (60/25/15)
+  tokens_per_request: {input: 570, output: 110}            # mean measured on the golden set; real retrieval contexts are usually longer
+
+  human_cost_per_handoff: 3.00       # USD, fully loaded L1 agent cost per ticket
+  silent_error_cost: 12.00           # USD, re-contact + churn risk per wrong automated answer
+  cache_hit_rate_on_easy: 0.025      # measured: offline TF-IDF cache at threshold 0.62 (3 of 120 easy cases)
+  cache_precision: 0.99
+  validator: {recall: 0.61, false_flag_rate: 0.056}   # pooled from the mock run (see reports/summary.md)
+
+# Start-tier distribution per true difficulty (small, mid, frontier) for router policies.
+# Measured from the cascade run at alpha=0.70 WITH risk rules (out-of-fold router probabilities).
+# The hard row is 100% frontier only because the risk rules caught every golden-set attack; treat as optimistic.
+simulator_route_defaults:
+  easy:   [0.675, 0.308, 0.017]
+  medium: [0.0, 1.0, 0.0]
+  hard:   [0.0, 0.0, 1.0]
+
+slo:
+  p90_latency_ms: 2500
+  p99_latency_ms: 12000
+  max_silent_error_rate: 0.03
+  max_handoff_rate: 0.12
+  min_judge_kappa_point: 0.80
+  min_judge_kappa_ci_low: 0.70

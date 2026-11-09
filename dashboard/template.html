@@ -1,0 +1,683 @@
+<title>CLQ Gateway</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an operations console. Decision strip on top, simulator (controls | results), then evidence sections. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --sunken: #eef1f4;
+  --ink: #131820;
+  --ink-2: #4b5563;
+  --ink-3: #6b7480;
+  --rule: #d9dee5;
+  --accent: #1f5fae;
+  --accent-soft: #e3edf9;
+  --good: #1b7a45; --good-bg: #e2f3e8;
+  --warn: #9a6400; --warn-bg: #fbf0d9;
+  --bad: #b3361b;  --bad-bg: #fbe5df;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1318; --surface: #171c23; --sunken: #1d232b; --ink: #e9edf2; --ink-2: #b4bcc7; --ink-3: #8b95a2;
+    --rule: #2c343e; --accent: #6aa6ee; --accent-soft: #1b2a3d;
+    --good: #5cc98a; --good-bg: #16301f; --warn: #e3b04b; --warn-bg: #33270f; --bad: #f08a6e; --bad-bg: #3a1c15;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1318; --surface: #171c23; --sunken: #1d232b; --ink: #e9edf2; --ink-2: #b4bcc7; --ink-3: #8b95a2;
+  --rule: #2c343e; --accent: #6aa6ee; --accent-soft: #1b2a3d;
+  --good: #5cc98a; --good-bg: #16301f; --warn: #e3b04b; --warn-bg: #33270f; --bad: #f08a6e; --bad-bg: #3a1c15;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.005em; }
+h1 { font-size: clamp(30px, 4.4vw, 44px); font-weight: 700; line-height: 1.05; }
+h2 { font-size: 26px; font-weight: 600; }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; }
+.lede { color: var(--ink-2); max-width: 70ch; font-size: 16px; }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
+.mono, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.sec-head p { color: var(--ink-2); max-width: 75ch; }
+header { display: flex; flex-direction: column; gap: 14px; }
+.banner { display: flex; gap: 12px; align-items: flex-start; background: var(--warn-bg); color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); border-radius: 8px; padding: 12px 14px; max-width: 900px; }
+.banner b { color: var(--warn); font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; white-space: nowrap; padding-top: 2px; }
+.banner span { color: var(--ink-2); font-size: 14px; }
+
+/* decision strip */
+.verdict { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.verdict > div { background: var(--surface); padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.verdict .big { font-family: var(--f-display); font-size: 30px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.verdict .sub { color: var(--ink-2); font-size: 13.5px; }
+@media (max-width: 900px) { .verdict { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .verdict { grid-template-columns: 1fr; } }
+
+/* simulator */
+.sim { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 980px) { .sim { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.controls .group { display: flex; flex-direction: column; gap: 10px; }
+.controls .group + .group { border-top: 1px solid var(--rule); padding-top: 14px; }
+.ctl { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; }
+.ctl label { font-size: 13.5px; color: var(--ink); }
+.ctl output { font-family: var(--f-mono); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+.ctl .hint { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button, .btn { font: 500 13px var(--f-body); border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
+  border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.seg button:hover, .btn:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, .case:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details.adv summary { cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+.acc-grid { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; margin-top: 10px; font-size: 12.5px; }
+.acc-grid input { width: 100%; font: 13px var(--f-mono); padding: 4px; border: 1px solid var(--rule); border-radius: 4px; background: var(--sunken); color: var(--ink); }
+.toggle { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th { font: 500 11.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); background: var(--sunken); position: sticky; top: 0; }
+td:first-child, th:first-child { text-align: left; }
+td.num, td .num { font-family: var(--f-mono); }
+tr:last-child td { border-bottom: none; }
+tr.best td { background: color-mix(in srgb, var(--good-bg) 70%, transparent); }
+tr.base td:first-child::after { content: "baseline"; margin-left: 8px; font: 500 10.5px var(--f-mono); color: var(--ink-3); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font: 500 11.5px var(--f-mono); padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.ok { color: var(--good); background: var(--good-bg); }
+.chip.no { color: var(--bad); background: var(--bad-bg); }
+.chip.mid { color: var(--warn); background: var(--warn-bg); }
+.chips { display: flex; gap: 4px; flex-wrap: nowrap; justify-content: flex-start; }
+
+.charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.charts .wide { grid-column: 1 / -1; }
+@media (max-width: 760px) { .charts { grid-template-columns: 1fr; } }
+.chart { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart .cap { font-size: 13px; color: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.axis text { fill: var(--ink-3); font: 11px var(--f-mono); }
+.axis line, .grid line { stroke: var(--rule); }
+.lbl { fill: var(--ink); font: 500 12px var(--f-body); }
+.lbl-2 { fill: var(--ink-2); font: 11.5px var(--f-mono); }
+#tip { position: fixed; pointer-events: none; z-index: 20; background: var(--ink); color: var(--bg); font: 12.5px var(--f-body);
+  padding: 7px 9px; border-radius: 6px; max-width: 260px; opacity: 0; transition: opacity .1s; }
+#tip b { font-family: var(--f-mono); font-weight: 500; }
+
+/* evidence */
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 13.5px; }
+.kv dt { color: var(--ink-2); }
+.kv dd { margin: 0; font-family: var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.note { font-size: 13px; color: var(--ink-2); }
+.matrix { display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 3px; font: 12px var(--f-mono); }
+.matrix div { padding: 6px; text-align: center; border-radius: 4px; }
+.matrix .h { color: var(--ink-3); background: transparent; }
+
+/* explorer */
+.explorer { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .explorer { grid-template-columns: 1fr; } }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters select { font: 13px var(--f-body); padding: 6px 8px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); color: var(--ink); }
+.caselist { max-height: 620px; overflow-y: auto; display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+.case { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 12px; border-bottom: 1px solid var(--rule); cursor: pointer; text-align: left; background: none; border-left: 0; border-right: 0; border-top: 0; color: var(--ink); font: inherit; }
+.case:hover { background: var(--sunken); }
+.case[aria-current="true"] { background: var(--accent-soft); }
+.case .q { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.case .id { font: 500 12px var(--f-mono); }
+.detail { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.quote { background: var(--sunken); border-radius: 8px; padding: 12px 14px; font-size: 14.5px; }
+.ctx { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.ctx div { border-left: 2px solid var(--rule); padding-left: 10px; color: var(--ink-2); overflow-wrap: anywhere; }
+.ctx b { font-family: var(--f-mono); font-weight: 500; color: var(--ink); font-size: 12px; }
+.runs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .runs { grid-template-columns: 1fr; } }
+.run { border: 1px solid var(--rule); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; min-width: 0; background: var(--surface); }
+.run.PASS { border-left: 3px solid var(--good); }
+.run.SILENT_ERROR { border-left: 3px solid var(--bad); }
+.run.HANDOFF { border-left: 3px solid var(--warn); }
+.run pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.45 var(--f-mono); color: var(--ink-2); background: var(--sunken); padding: 8px; border-radius: 6px; }
+.path { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font: 12px var(--f-mono); }
+.path span.t { border: 1px solid var(--rule); border-radius: 4px; padding: 1px 6px; }
+.path span.t.flag { border-color: var(--bad); color: var(--bad); }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+footer { color: var(--ink-3); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+footer code, p code, li code { font-family: var(--f-mono); font-size: 12.5px; background: var(--sunken); padding: 1px 4px; border-radius: 3px; }
+ul.find { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: var(--ink); max-width: 80ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Merchant support copilot · routing &amp; eval control plane</div>
+    <h1>CLQ Gateway</h1>
+    <p class="lede">Every support ticket can go to a small, mid or frontier model, from a semantic cache, or to a human. This console shows what each routing policy costs once you count human hand-offs and wrong answers, how fast it responds, and what the eval found.</p>
+    <div class="banner" role="note"><b>SIMULATED</b><span>The model outputs behind these numbers come from a mock provider whose accuracy priors are assumptions (see <code>config/tiers.yaml</code>). The grading, routing, validation, statistics and economics code is real. Run the repo with real models before quoting any figure.</span></div>
+  </header>
+
+  <section aria-labelledby="h-decision">
+    <div class="sec-head"><div class="eyebrow">Decision at current settings</div><h2 id="h-decision">Which policy should take production traffic?</h2></div>
+    <div class="verdict" id="verdict"></div>
+  </section>
+
+  <section aria-labelledby="h-sim">
+    <div class="sec-head">
+      <div class="eyebrow">Unit economics simulator</div>
+      <h2 id="h-sim">Cost, latency and quality per policy</h2>
+      <p>Expected rates are computed exactly by enumerating every path a ticket can take. Latency percentiles come from a seeded 20,000-sample Monte Carlo. This page runs the same algorithm as <code>clq/economics.py</code>, and a test checks they match to 1e-9.</p>
+    </div>
+    <div class="sim">
+      <form class="panel controls" id="controls" onsubmit="return false">
+        <div class="group">
+          <div class="eyebrow">Business</div>
+          <div class="ctl"><label for="c-volume">Tickets per month</label><output id="o-volume"></output>
+            <input type="range" id="c-volume" min="50000" max="5000000" step="50000"></div>
+          <div class="ctl"><label for="c-human">Human cost per hand-off</label><output id="o-human"></output>
+            <input type="range" id="c-human" min="0.5" max="15" step="0.25"></div>
+          <div class="ctl"><label for="c-silent">Cost of a wrong answer</label><output id="o-silent"></output>
+            <input type="range" id="c-silent" min="0" max="40" step="0.5">
+            <span class="hint">Re-contact plus churn risk. This assumption decides the policy.</span></div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Production traffic mix</div>
+          <div class="ctl"><label for="c-easy">Easy share</label><output id="o-easy"></output>
+            <input type="range" id="c-easy" min="0.2" max="0.95" step="0.01"></div>
+          <div class="ctl"><label for="c-hardshare">Hard share of the rest</label><output id="o-hardshare"></output>
+            <input type="range" id="c-hardshare" min="0" max="1" step="0.01">
+            <span class="hint" id="mixhint"></span></div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Validator (error detection)</div>
+          <div class="ctl"><label for="c-recall">Catches wrong answers</label><output id="o-recall"></output>
+            <input type="range" id="c-recall" min="0" max="1" step="0.01"></div>
+          <div class="ctl"><label for="c-ff">Flags correct answers</label><output id="o-ff"></output>
+            <input type="range" id="c-ff" min="0" max="0.3" step="0.002"></div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Router &amp; cache</div>
+          <div class="seg" role="group" aria-label="Risk rules">
+            <button type="button" id="rr-on" aria-pressed="true">Risk rules on</button>
+            <button type="button" id="rr-off" aria-pressed="false">Risk rules off</button>
+          </div>
+          <span class="hint note">Start-tier mix measured out of fold at alpha 0.70.</span>
+          <label class="toggle" for="c-cache"><input type="checkbox" id="c-cache"> Semantic cache</label>
+          <div class="ctl"><label for="c-hit">Cache hits on easy tickets</label><output id="o-hit"></output>
+            <input type="range" id="c-hit" min="0" max="0.6" step="0.005"></div>
+        </div>
+        <div class="group">
+          <div class="eyebrow">Tokens per call</div>
+          <div class="ctl"><label for="c-tin">Input tokens</label><output id="o-tin"></output>
+            <input type="range" id="c-tin" min="200" max="8000" step="10"></div>
+          <div class="ctl"><label for="c-tout">Output tokens</label><output id="o-tout"></output>
+            <input type="range" id="c-tout" min="50" max="2000" step="10"></div>
+        </div>
+        <details class="adv">
+          <summary>Accuracy by tier and difficulty</summary>
+          <div class="acc-grid" id="accgrid"></div>
+        </details>
+        <button type="button" class="btn" id="reset">Reset to repo defaults</button>
+      </form>
+
+      <div class="panel" style="gap:20px">
+        <div class="tablewrap"><table id="simtable"></table></div>
+        <div class="charts">
+          <div class="chart wide">
+            <h3>Fully-loaded cost per 1,000 tickets</h3>
+            <div class="legend"><span><i style="background:var(--s1)"></i>Model + infra</span><span><i style="background:var(--s2)"></i>Human hand-offs</span><span><i style="background:var(--s3)"></i>Wrong answers</span></div>
+            <svg id="ch-cost" role="img" aria-label="Stacked bar chart of fully-loaded cost per policy"></svg>
+            <p class="cap" id="cap-cost"></p>
+          </div>
+          <div class="chart">
+            <h3>Cost vs P90 latency</h3>
+            <svg id="ch-pareto" role="img" aria-label="Scatter of fully-loaded cost against P90 latency"></svg>
+            <p class="cap">Lower-left is better. The dashed line is the 2.5 s P90 SLO.</p>
+          </div>
+          <div class="chart">
+            <h3>Break-even cost of a wrong answer</h3>
+            <div class="legend"><span><i style="background:var(--s1)"></i>Frontier only</span><span><i style="background:var(--s2)"></i>Routed cascade</span></div>
+            <svg id="ch-breakeven" role="img" aria-label="Lines of fully-loaded cost as the cost of a wrong answer rises"></svg>
+            <p class="cap" id="cap-be"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-eval">
+    <div class="sec-head">
+      <div class="eyebrow">Eval run · 200 golden cases · 7 policies</div>
+      <h2 id="h-eval">What the eval found</h2>
+      <p>The golden set oversamples hard cases (120 routine, 50 multi-hop, 30 adversarial). Quality is reported on the golden set; cost and latency are re-weighted to the production mix. "Human" columns use the simulated human labels, because the LLM judge failed its calibration gate.</p>
+    </div>
+    <ul class="find" id="findings"></ul>
+    <div class="tablewrap"><table id="evaltable"></table></div>
+    <div class="cards">
+      <div class="panel"><h3>Judge calibration</h3><dl class="kv" id="calib"></dl><p class="note" id="calib-note"></p></div>
+      <div class="panel"><h3>Router (out of fold)</h3><div class="matrix" id="router"></div><p class="note" id="router-note"></p></div>
+      <div class="panel"><h3>Validator recall</h3><dl class="kv" id="validator"></dl><p class="note">Share of wrong answers the validator flags before delivery, by tier. False-flag rate on correct answers in brackets.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-explorer">
+    <div class="sec-head">
+      <div class="eyebrow">Trace explorer</div>
+      <h2 id="h-explorer">Inspect any case</h2>
+      <p>Each case shows the merchant message, the retrieved context, the contract it is graded against, and what four policies did with it: tiers tried, validator flags, judge vs human verdict, cost and latency.</p>
+    </div>
+    <div class="filters">
+      <select id="f-stratum" aria-label="Stratum"><option value="">All strata</option><option value="routine">Routine</option><option value="multi_hop">Multi-hop</option><option value="adversarial">Adversarial</option></select>
+      <select id="f-policy" aria-label="Policy"></select>
+      <select id="f-outcome" aria-label="Outcome"><option value="">Any outcome</option><option value="PASS">Pass</option><option value="SILENT_ERROR">Silent error (judge)</option><option value="HANDOFF">Hand-off</option><option value="DISAGREE">Judge and human disagree</option></select>
+      <span class="note mono" id="f-count"></span>
+    </div>
+    <div class="explorer">
+      <div class="caselist" id="caselist" role="list"></div>
+      <div class="detail panel" id="detail"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-abl">
+    <div class="sec-head">
+      <div class="eyebrow">Ablations &amp; error analysis</div>
+      <h2 id="h-abl">What moves the numbers</h2>
+      <p>Each ablation varies one factor on the routed cascade + cache. Settings were compared on the same golden set, so treat the best row as a hypothesis for fresh data.</p>
+    </div>
+    <div class="split">
+      <div class="chart"><h3>Router alpha</h3><div class="tablewrap"><table id="abl-alpha"></table></div></div>
+      <div class="chart"><h3>Validator confidence threshold</h3><div class="tablewrap"><table id="abl-conf"></table></div></div>
+      <div class="chart"><h3>Cache similarity threshold</h3><div class="tablewrap"><table id="abl-cache"></table></div></div>
+      <div class="chart"><h3>Silent errors by cause (human labels)</h3><div class="tablewrap"><table id="errors"></table></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Source: the <code>clq-gateway</code> repo. Data is a synthetic golden set for a fictional platform (Omnistock) and fictional sales channels. Prices are illustrative per-token prices. Latency and accuracy priors are assumptions until replaced by a live run.</span>
+    <span>Reproduce: <code>make data eval test dashboard</code>.</span>
+  </footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+/*__SIM_JS__*/
+</script>
+<script>
+const DATA = /*__DATA__*/;
+</script>
+<script>
+(function () {
+  const S = window.CLQSim;
+  const $ = (id) => document.getElementById(id);
+  const L = DATA.labels;
+  const POL = S.POLICIES;
+  const short = { "single:small": "Small only", "single:mid": "Mid only", "single:frontier": "Frontier only", "static_router": "Static router", "cheap_first": "Cheap-first", "cascade": "Routed cascade" };
+  const pct = (x, d = 1) => (x == null || isNaN(x)) ? "n/a" : (100 * x).toFixed(d) + "%";
+  const money = (x, d = 0) => "$" + Number(x).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const secs = (ms) => (ms / 1000).toFixed(2) + " s";
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const slo = DATA.slo;
+
+  // ------------------------------------------------------------------ simulator state
+  const D = DATA.sim_defaults;
+  let P, riskRules;
+  const TIER_PRICES = DATA.tier_prices;
+
+  function reset() {
+    P = clone(D);
+    riskRules = true;
+    P.route = clone(DATA.route_presets.with_risk_rules);
+    P.tokens = clone(DATA.tokens);
+    syncControls();
+    schedule();
+  }
+
+  const ctl = {
+    volume: { el: "c-volume", out: (v) => Number(v).toLocaleString("en-US"), get: () => P.volume, set: (v) => P.volume = +v },
+    human: { el: "c-human", out: (v) => money(v, 2), get: () => P.human_cost, set: (v) => P.human_cost = +v },
+    silent: { el: "c-silent", out: (v) => money(v, 2), get: () => P.silent_cost, set: (v) => P.silent_cost = +v },
+    recall: { el: "c-recall", out: (v) => pct(v, 0), get: () => P.recall, set: (v) => P.recall = +v },
+    ff: { el: "c-ff", out: (v) => pct(v, 1), get: () => P.false_flag, set: (v) => P.false_flag = +v },
+    hit: { el: "c-hit", out: (v) => pct(v, 1), get: () => P.cache_hit_easy, set: (v) => P.cache_hit_easy = +v },
+    tin: { el: "c-tin", out: (v) => Number(v).toLocaleString("en-US"), get: () => P.tokens.input, set: (v) => { P.tokens.input = +v; repriced(); } },
+    tout: { el: "c-tout", out: (v) => Number(v).toLocaleString("en-US"), get: () => P.tokens.output, set: (v) => { P.tokens.output = +v; repriced(); } },
+    easy: { el: "c-easy", out: (v) => pct(v, 0), get: () => P.mix.easy, set: (v) => setMix(+v, null) },
+    hardshare: { el: "c-hardshare", out: (v) => pct(v, 0), get: () => P.mix.hard / Math.max(1e-9, P.mix.medium + P.mix.hard), set: (v) => setMix(null, +v) },
+  };
+  function setMix(easy, hardShare) {
+    const e = easy != null ? easy : P.mix.easy;
+    const hs = hardShare != null ? hardShare : P.mix.hard / Math.max(1e-9, P.mix.medium + P.mix.hard);
+    P.mix = { easy: e, medium: (1 - e) * (1 - hs), hard: (1 - e) * hs };
+  }
+  function repriced() {
+    for (const t of S.TIERS) P.cost_per_call[t] = P.tokens.input * TIER_PRICES[t].in / 1e6 + P.tokens.output * TIER_PRICES[t].out / 1e6;
+  }
+  function syncControls() {
+    for (const k in ctl) { const c = ctl[k]; const el = $(c.el); el.value = c.get(); $("o-" + k).textContent = c.out(c.get()); }
+    $("c-cache").checked = !!P.cache_on;
+    $("c-hit").disabled = !P.cache_on;
+    $("rr-on").setAttribute("aria-pressed", String(riskRules));
+    $("rr-off").setAttribute("aria-pressed", String(!riskRules));
+    $("mixhint").textContent = `Easy ${pct(P.mix.easy, 0)} · medium ${pct(P.mix.medium, 0)} · hard ${pct(P.mix.hard, 0)}`;
+    for (const t of S.TIERS) for (const d of S.DIFFS) { const i = $(`acc-${t}-${d}`); if (i) i.value = P.acc[t][d]; }
+  }
+  for (const k in ctl) {
+    const c = ctl[k];
+    $(c.el).addEventListener("input", (e) => { c.set(e.target.value); $("o-" + k).textContent = c.out(c.get()); if (k === "easy" || k === "hardshare") $("mixhint").textContent = `Easy ${pct(P.mix.easy, 0)} · medium ${pct(P.mix.medium, 0)} · hard ${pct(P.mix.hard, 0)}`; schedule(); });
+  }
+  $("c-cache").addEventListener("change", (e) => { P.cache_on = e.target.checked; $("c-hit").disabled = !P.cache_on; schedule(); });
+  $("rr-on").addEventListener("click", () => { riskRules = true; P.route = clone(DATA.route_presets.with_risk_rules); syncControls(); schedule(); });
+  $("rr-off").addEventListener("click", () => { riskRules = false; P.route = clone(DATA.route_presets.without_risk_rules); syncControls(); schedule(); });
+  $("reset").addEventListener("click", reset);
+  (function buildAcc() {
+    const g = $("accgrid");
+    let h = '<span></span>' + S.DIFFS.map((d) => `<span class="eyebrow">${d}</span>`).join("");
+    for (const t of S.TIERS) {
+      h += `<span>${t}</span>` + S.DIFFS.map((d) => `<input type="number" min="0" max="1" step="0.01" id="acc-${t}-${d}" aria-label="${t} accuracy on ${d}">`).join("");
+    }
+    g.innerHTML = h;
+    g.addEventListener("input", (e) => {
+      const m = e.target.id.match(/^acc-(\w+)-(\w+)$/); if (!m) return;
+      const v = Math.min(1, Math.max(0, parseFloat(e.target.value)));
+      if (!isNaN(v)) { P.acc[m[1]][m[2]] = v; schedule(); }
+    });
+  })();
+
+  let pending = false;
+  function schedule() { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; render(); }); }
+
+  // ------------------------------------------------------------------ tooltip
+  const tip = $("tip");
+  function showTip(e, html) { tip.innerHTML = html; tip.style.opacity = 1; moveTip(e); }
+  function moveTip(e) { const x = Math.min(e.clientX + 14, window.innerWidth - 270); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+  function hideTip() { tip.style.opacity = 0; }
+  function bindTips(svg) {
+    svg.querySelectorAll("[data-tip]").forEach((n) => {
+      n.addEventListener("mouseenter", (e) => showTip(e, n.getAttribute("data-tip")));
+      n.addEventListener("mousemove", moveTip);
+      n.addEventListener("mouseleave", hideTip);
+    });
+  }
+
+  // ------------------------------------------------------------------ render simulator
+  function sloChips(r) {
+    const c = [];
+    const add = (ok, label) => c.push(`<span class="chip ${ok ? "ok" : "no"}">${label}</span>`);
+    add(r.silent_error_rate <= slo.max_silent_error_rate, "errors");
+    add(r.handoff_rate <= slo.max_handoff_rate, "hand-offs");
+    add(r.latency_ms.p90 <= slo.p90_latency_ms, "P90");
+    add(r.latency_ms.p99 <= slo.p99_latency_ms, "P99");
+    return `<div class="chips">${c.join("")}</div>`;
+  }
+
+  function render() {
+    const R = {};
+    for (const pol of POL) R[pol] = S.evaluatePolicy(P, pol);
+    const best = POL.reduce((a, b) => R[a].fully_loaded_per_1k <= R[b].fully_loaded_per_1k ? a : b);
+    const base = R["single:frontier"], cas = R["cascade"];
+
+    // table
+    let h = `<thead><tr><th>Policy</th><th>Correct</th><th>Wrong (silent)</th><th>Hand-off</th><th>Model $/1k</th><th>Fully-loaded $/1k</th><th>Per month</th><th>P50</th><th>P90</th><th>P99</th><th>SLOs met</th></tr></thead><tbody>`;
+    for (const pol of POL) {
+      const r = R[pol];
+      h += `<tr class="${pol === best ? "best" : ""} ${pol === "single:frontier" ? "base" : ""}"><td>${short[pol]}</td><td class="num">${pct(r.pass_rate)}</td><td class="num">${pct(r.silent_error_rate)}</td><td class="num">${pct(r.handoff_rate)}</td><td class="num">${money(r.model_cost_per_1k, 2)}</td><td class="num"><b>${money(r.fully_loaded_per_1k)}</b></td><td class="num">${money(r.monthly_fully_loaded)}</td><td class="num">${secs(r.latency_ms.p50)}</td><td class="num">${secs(r.latency_ms.p90)}</td><td class="num">${secs(r.latency_ms.p99)}</td><td>${sloChips(r)}</td></tr>`;
+    }
+    $("simtable").innerHTML = h + "</tbody>";
+
+    // break-even (fully-loaded is linear in silent cost)
+    const fixed = (r) => r.model_cost_per_1k + r.human_cost_per_1k;
+    const ds = 1000 * (cas.silent_error_rate - base.silent_error_rate);
+    const beS = Math.abs(ds) > 1e-12 ? (fixed(base) - fixed(cas)) / ds : null;
+    // break-even recall by bisection over [0,1] (fully-loaded difference is monotone in recall here; we scan to be safe)
+    let beR = null;
+    for (let r = 0; r <= 100; r++) {
+      const q = clone(P); q.recall = r / 100; q.mc_samples = 1;
+      const a = S.evaluatePolicy(q, "cascade").fully_loaded_per_1k, b = S.evaluatePolicy(q, "single:frontier").fully_loaded_per_1k;
+      if (a <= b) { beR = r / 100; break; }
+    }
+
+    // ds > 0: cascade has more wrong answers, so it wins below the break-even; ds < 0: it wins above it.
+    let beLabel = "Cascade wins if a wrong answer costs under", beValue = beS == null ? "n/a" : money(Math.max(0, beS), 2);
+    if (beS != null && ds > 0 && beS <= 0) beValue = "never";
+    if (beS != null && ds < 0) { beLabel = "Cascade wins if a wrong answer costs over"; beValue = beS <= 0 ? "any amount" : money(beS, 2); }
+    // verdict strip
+    const saving = base.monthly_fully_loaded - R[best].monthly_fully_loaded;
+    $("verdict").innerHTML = `
+      <div><span class="eyebrow">Lowest fully-loaded cost</span><span class="big">${short[best]}</span><span class="sub">${money(R[best].fully_loaded_per_1k)} per 1k tickets${best === "single:frontier" ? " · today's baseline" : ` · saves ${money(saving)} a month vs frontier only`}</span></div>
+      <div><span class="eyebrow">Model share of frontier cost</span><span class="big">${pct(base.model_cost_per_1k / base.fully_loaded_per_1k)}</span><span class="sub">Tokens are ${money(base.model_cost_per_1k, 2)} of ${money(base.fully_loaded_per_1k)} per 1k. Hand-offs and wrong answers are the rest.</span></div>
+      <div><span class="eyebrow">${beLabel}</span><span class="big">${beValue}</span><span class="sub">Currently set to ${money(P.silent_cost, 2)}. The cascade is ${(base.latency_ms.p50 / cas.latency_ms.p50).toFixed(1)}x faster at the median.</span></div>
+      <div><span class="eyebrow">Validator recall the cascade needs</span><span class="big">${beR == null ? "> 100%" : pct(beR, 0)}</span><span class="sub">Currently ${pct(P.recall, 0)}. Error detection is the lever, not the router.</span></div>`;
+
+    drawCost(R);
+    drawPareto(R);
+    drawBreakeven(base, cas, beS);
+    $("cap-cost").textContent = `At ${Number(P.volume).toLocaleString("en-US")} tickets a month, frontier only costs ${money(base.monthly_fully_loaded)} fully loaded, of which ${money(base.monthly_model_cost)} is model spend. The routed cascade costs ${money(cas.monthly_fully_loaded)}, of which ${money(cas.monthly_model_cost)} is model spend. Model cost is drawn to scale, which is why it is barely visible; hover a bar for exact values.`;
+    $("cap-be").textContent = beS == null ? "Both policies have the same wrong-answer rate."
+      : beS <= 0 ? (ds > 0 ? "The cascade costs more at every wrong-answer cost." : "The cascade costs less at every wrong-answer cost.")
+      : `The lines cross at ${money(beS, 2)} per wrong answer. To the right of the cross, ${ds > 0 ? "frontier only" : "the routed cascade"} is cheaper.`;
+  }
+
+  const NS = "http://www.w3.org/2000/svg";
+  function svgSize(svg, w, h) { svg.setAttribute("viewBox", `0 0 ${w} ${h}`); }
+  function niceStep(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); const m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p; }
+  // axis max that is a whole number of "nice" steps (4 intervals)
+  function niceMax(v) { const st = niceStep(v / 4); return Math.ceil(v / st - 1e-9) * st; }
+
+
+  const widthOf = (svg) => Math.max(300, Math.round(svg.parentElement.clientWidth || 420));
+  function drawCost(R) {
+    const svg = $("ch-cost"); const W = widthOf(svg), rowH = 34, top = 8, left = 112, right = 70, H = top + POL.length * rowH + 30;
+    svgSize(svg, W, H);
+    const max = niceMax(Math.max(...POL.map((p) => R[p].fully_loaded_per_1k)));
+    const x = (v) => left + (W - left - right) * v / max;
+    const nt = W < 520 ? 2 : 4;
+    let g = `<g class="grid">`;
+    for (let i = 0; i <= nt; i++) { const v = max * i / nt; g += `<line x1="${x(v)}" x2="${x(v)}" y1="${top}" y2="${H - 24}"></line>`; }
+    g += `</g><g class="axis">`;
+    for (let i = 0; i <= nt; i++) { const v = max * i / nt; g += `<text x="${x(v)}" y="${H - 8}" text-anchor="middle">${money(v)}</text>`; }
+    g += `</g>`;
+    POL.forEach((pol, i) => {
+      const r = R[pol]; const y = top + i * rowH + 6, bh = rowH - 14;
+      const parts = [["Model + infra", r.model_cost_per_1k, "var(--s1)"], ["Human hand-offs", r.human_cost_per_1k, "var(--s2)"], ["Wrong answers", r.silent_cost_per_1k, "var(--s3)"]];
+      let x0 = 0;
+      g += `<text class="lbl" x="${left - 10}" y="${y + bh / 2 + 4}" text-anchor="end">${short[pol]}</text>`;
+      parts.forEach(([name, v, col], k) => {
+        const w = Math.max(0, x(x0 + v) - x(x0) - (k < 2 && v > 0 ? 2 : 0));
+        if (v > 0) g += `<rect x="${x(x0)}" y="${y}" width="${Math.max(w, 0.5)}" height="${bh}" rx="${k === 2 || (k === 1 && parts[2][1] === 0) ? 3 : 0}" fill="${col}" data-tip="<b>${short[pol]}</b><br>${name}: ${money(v, 2)} per 1k"></rect>`;
+        x0 += v;
+      });
+      g += `<text class="lbl-2" x="${x(r.fully_loaded_per_1k) + 6}" y="${y + bh / 2 + 4}">${money(r.fully_loaded_per_1k)}</text>`;
+    });
+    svg.innerHTML = g; bindTips(svg);
+  }
+
+  function drawPareto(R) {
+    const svg = $("ch-pareto"); const W = widthOf(svg), H = 300, l = 52, r = 16, t = 12, b = 40;
+    svgSize(svg, W, H);
+    const xs = POL.map((p) => R[p].fully_loaded_per_1k), ys = POL.map((p) => R[p].latency_ms.p90 / 1000);
+    const xmax = niceMax(Math.max(...xs) * 1.05), ymax = niceMax(Math.max(Math.max(...ys), slo.p90_latency_ms / 1000) * 1.1);
+    const X = (v) => l + (W - l - r) * v / xmax, Y = (v) => H - b - (H - t - b) * v / ymax;
+    let g = `<g class="grid">`;
+    for (let i = 0; i <= 4; i++) g += `<line x1="${l}" x2="${W - r}" y1="${Y(ymax * i / 4)}" y2="${Y(ymax * i / 4)}"></line>`;
+    g += `</g><g class="axis">`;
+    for (let i = 0; i <= 4; i++) g += `<text x="${l - 6}" y="${Y(ymax * i / 4) + 4}" text-anchor="end">${(ymax * i / 4).toFixed(1)}s</text>`;
+    for (let i = 0; i <= 4; i++) g += `<text x="${X(xmax * i / 4)}" y="${H - b + 16}" text-anchor="middle">${money(xmax * i / 4)}</text>`;
+    g += `<text x="${(l + W - r) / 2}" y="${H - 4}" text-anchor="middle">fully-loaded $ per 1k tickets</text></g>`;
+    const sy = Y(slo.p90_latency_ms / 1000);
+    g += `<line x1="${l}" x2="${W - r}" y1="${sy}" y2="${sy}" stroke="var(--bad)" stroke-dasharray="4 4" stroke-width="1.5"></line>`;
+    // place each label at the first candidate spot that clears every dot, the plot edge and earlier labels
+    const pts = POL.map((pol, i) => ({ pol, cx: X(xs[i]), cy: Y(ys[i]) }));
+    const boxes = pts.map((p) => ({ x0: p.cx - 7, x1: p.cx + 7, y0: p.cy - 7, y1: p.cy + 7 }));
+    const hit = (a) => boxes.some((b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0);
+    const order = pts.slice().sort((a, b) => a.cy - b.cy);
+    for (const p of order) {
+      const w = short[p.pol].length * 6.6;
+      const cands = [[10, 4, "start"], [-10, 4, "end"], [0, -12, "middle"], [0, 20, "middle"], [10, -10, "start"], [-10, -10, "end"], [10, 18, "start"], [-10, 18, "end"]];
+      let chosen = null;
+      for (const [dx, dy, an] of cands) {
+        const x = p.cx + dx, y = p.cy + dy;
+        const x0 = an === "start" ? x : an === "end" ? x - w : x - w / 2;
+        const bx = { x0, x1: x0 + w, y0: y - 11, y1: y + 3 };
+        if (bx.x0 < l || bx.x1 > W - r + 4 || bx.y0 < t - 4 || bx.y1 > H - b) continue;
+        if (!hit(bx)) { chosen = { x, y, an, bx }; break; }
+      }
+      if (!chosen) { const an = p.cx > (l + W - r) / 2 ? "end" : "start"; chosen = { x: p.cx + (an === "end" ? -10 : 10), y: p.cy + 4, an, bx: null }; }
+      if (chosen.bx) boxes.push(chosen.bx);
+      g += `<text class="lbl" x="${chosen.x}" y="${chosen.y}" text-anchor="${chosen.an}">${short[p.pol]}</text>`;
+    }
+    for (const p of pts) {
+      const i = POL.indexOf(p.pol);
+      g += `<circle cx="${p.cx}" cy="${p.cy}" r="6" fill="var(--s1)" stroke="var(--surface)" stroke-width="2" data-tip="<b>${short[p.pol]}</b><br>${money(xs[i])} per 1k · P90 ${ys[i].toFixed(2)} s"></circle>`;
+    }
+    svg.innerHTML = g; bindTips(svg);
+  }
+
+  function drawBreakeven(base, cas, beS) {
+    const svg = $("ch-breakeven"); const W = widthOf(svg), H = 300, l = 56, r = 16, t = 12, b = 40;
+    svgSize(svg, W, H);
+    const smax = 30;
+    const f = (res, s) => res.model_cost_per_1k + res.human_cost_per_1k + 1000 * res.silent_error_rate * s;
+    const ymax = niceMax(Math.max(f(base, smax), f(cas, smax)) * 1.05);
+    const X = (v) => l + (W - l - r) * v / smax, Y = (v) => H - b - (H - t - b) * v / ymax;
+    let g = `<g class="grid">`;
+    for (let i = 0; i <= 4; i++) g += `<line x1="${l}" x2="${W - r}" y1="${Y(ymax * i / 4)}" y2="${Y(ymax * i / 4)}"></line>`;
+    g += `</g><g class="axis">`;
+    for (let i = 0; i <= 4; i++) g += `<text x="${l - 6}" y="${Y(ymax * i / 4) + 4}" text-anchor="end">${money(ymax * i / 4)}</text>`;
+    for (let i = 0; i <= 6; i++) g += `<text x="${X(smax * i / 6)}" y="${H - b + 16}" text-anchor="middle">${money(smax * i / 6)}</text>`;
+    g += `<text x="${(l + W - r) / 2}" y="${H - 4}" text-anchor="middle">cost of one wrong answer</text></g>`;
+    const cur = Math.min(P.silent_cost, smax);
+    g += `<line x1="${X(cur)}" x2="${X(cur)}" y1="${t}" y2="${H - b}" stroke="var(--ink-3)" stroke-dasharray="2 3"></line><text class="lbl-2" x="${X(cur) + 4}" y="${t + 10}">current</text>`;
+    [[base, "var(--s1)", "Frontier only"], [cas, "var(--s2)", "Routed cascade"]].forEach(([res, col, name]) => {
+      g += `<line x1="${X(0)}" y1="${Y(f(res, 0))}" x2="${X(smax)}" y2="${Y(f(res, smax))}" stroke="${col}" stroke-width="2" stroke-linecap="round"></line>`;
+      g += `<circle cx="${X(cur)}" cy="${Y(f(res, cur))}" r="5" fill="${col}" stroke="var(--surface)" stroke-width="2" data-tip="<b>${name}</b><br>${money(f(res, cur))} per 1k at ${money(cur, 2)} per wrong answer"></circle>`;
+    });
+    if (beS != null && beS > 0 && beS < smax) {
+      g += `<circle cx="${X(beS)}" cy="${Y(f(base, beS))}" r="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="2" data-tip="Break-even at <b>${money(beS, 2)}</b>"></circle>`;
+    }
+    svg.innerHTML = g; bindTips(svg);
+  }
+
+  // ------------------------------------------------------------------ eval section
+  function evalSection() {
+    const s = DATA.summary;
+    const order = ["single:small", "single:mid", "single:frontier", "static_router", "cheap_first", "cascade", "cascade+cache"];
+    let h = `<thead><tr><th>Policy</th><th>Pass@1 judge</th><th>95% CI</th><th>Pass@1 human</th><th>Wrong judge</th><th>Wrong human</th><th>Hand-offs</th><th>Escalated</th><th>McNemar p</th><th>$/1k prod</th><th>Fully-loaded prod</th><th>P50 prod</th><th>P90 prod</th></tr></thead><tbody>`;
+    for (const p of order) {
+      const g = s[p].golden_mix, pm = s[p].production_mix, m = s[p].vs_frontier_mcnemar;
+      h += `<tr class="${p === "single:frontier" ? "base" : ""}"><td>${L[p].replace(" (baseline)", "")}</td><td class="num">${pct(g.pass_rate)}</td><td class="num">${pct(g.pass_ci95[0], 0)}–${pct(g.pass_ci95[1], 0)}</td><td class="num">${pct(g.true_pass_rate_simulated)}</td><td class="num">${pct(g.silent_error_rate)}</td><td class="num">${pct(g.true_silent_error_rate_simulated)}</td><td class="num">${pct(g.validator_handoff_rate)}</td><td class="num">${pct(g.escalation_rate)}</td><td class="num">${p === "single:frontier" ? "–" : m.p_value.toFixed(3)}</td><td class="num">${money(pm.cost_per_1k_usd, 3)}</td><td class="num">${money(pm.fully_loaded_per_1k_usd)}</td><td class="num">${secs(pm.latency_ms.p50)}</td><td class="num">${secs(pm.latency_ms.p90)}</td></tr>`;
+    }
+    $("evaltable").innerHTML = h + "</tbody>";
+
+    const c = DATA.calibration, cg = s["cascade"].golden_mix, fg = s["single:frontier"].golden_mix;
+    const rr = DATA.router.risk_rules, hr = DATA.router.hard_routing_without_risk_rules;
+    const be = DATA.breakeven;
+    $("findings").innerHTML = [
+      `The routed cascade matches frontier quality on the golden set (human-graded pass ${pct(cg.true_pass_rate_simulated)} vs ${pct(fg.true_pass_rate_simulated)}, McNemar p = ${s["cascade"].vs_frontier_mcnemar.p_value.toFixed(2)}) at ${money(s["cascade"].production_mix.cost_per_1k_usd, 2)} vs ${money(s["single:frontier"].production_mix.cost_per_1k_usd, 2)} model cost per 1k.`,
+      `It also delivers more wrong answers (${pct(cg.true_silent_error_rate_simulated)} vs ${pct(fg.true_silent_error_rate_simulated)}), so at default assumptions its fully-loaded cost is higher. It breaks even only if a wrong answer costs under ${money(be.silent_cost, 2)}, or if validator recall reaches ${pct(be.recall, 0)}.`,
+      `The LLM judge failed calibration (kappa ${c.kappa.toFixed(2)}, CI ${c.ci_low.toFixed(2)}–${c.ci_high.toFixed(2)}) despite ${pct(c.raw_agreement, 0)} raw agreement. Judge-graded error rates are inflated by false fails, so decisions use human labels.`,
+      `Without risk rules, the router sends ${hr.small + hr.mid} of ${hr.small + hr.mid + hr.frontier} adversarial cases below the frontier tier. The rules catch ${rr.adversarial_flagged}/${rr.adversarial_total} with ${rr.non_adversarial_flagged}/${rr.non_adversarial_total} false positives, but they were written knowing the attacks.`,
+    ].map((x) => `<li>${x}</li>`).join("");
+
+    $("calib").innerHTML = `<dt>Cohen's kappa</dt><dd>${c.kappa.toFixed(3)}</dd><dt>95% bootstrap CI</dt><dd>${c.ci_low.toFixed(2)}–${c.ci_high.toFixed(2)}</dd><dt>Raw agreement</dt><dd>${pct(c.raw_agreement)}</dd><dt>Labelled replies</dt><dd>${c.n}</dd><dt>False fails on grounded</dt><dd>${pct(c.judge_false_fail_rate_on_grounded)}</dd><dt>Gate (≥ ${c.gate.min_point}, CI low ≥ ${c.gate.min_ci_low})</dt><dd><span class="chip ${c.gate.passed ? "ok" : "no"}">${c.gate.passed ? "pass" : "fail"}</span></dd>`;
+    $("calib-note").textContent = "Simulated judge vs simulated human labels. Replace both with real ones (clq label, clq calibrate) before quoting.";
+    const rq = DATA.router.query_plus_context;
+    let m = `<div class="h"></div><div class="h">easy</div><div class="h">medium</div><div class="h">hard</div>`;
+    ["easy", "medium", "hard"].forEach((lbl, i) => {
+      m += `<div class="h">${lbl}</div>` + rq.row_normalised[i].map((v, j) => `<div style="background:color-mix(in srgb, var(--s1) ${Math.round(v * 70)}%, var(--sunken));color:${v > 0.55 ? "#fff" : "var(--ink)"}">${pct(v, 0)}</div>`).join("");
+    });
+    $("router").innerHTML = m;
+    $("router-note").textContent = `Rows are true difficulty, columns are the classifier's top prediction. Accuracy ${pct(rq.accuracy)}. Synthetic templates make this look easier than real tickets will be.`;
+    const v = DATA.validator;
+    $("validator").innerHTML = ["small", "mid", "frontier"].map((t) => `<dt>${t} (n wrong = ${v[t].n_wrong})</dt><dd>${pct(v[t].recall_on_wrong, 0)} <span class="note">(${pct(v[t].false_flag_rate_on_correct, 1)})</span></dd>`).join("");
+  }
+
+  // ------------------------------------------------------------------ ablations
+  function ablations() {
+    const a = DATA.ablations;
+    const row = (k, fmtK) => (r) => `<tr><td class="num">${fmtK(r[k])}</td><td class="num">${pct(r.true_silent_error_rate)}</td><td class="num">${pct(r.handoff_rate)}</td><td class="num">${money(r.cost_per_1k_prod, 2)}</td><td class="num">${money(r.fully_loaded_per_1k_prod)}</td><td class="num">${secs(r.p90_ms_prod)}</td></tr>`;
+    const head = (k) => `<thead><tr><th>${k}</th><th>Wrong (human)</th><th>Hand-offs</th><th>$/1k</th><th>Fully-loaded</th><th>P90</th></tr></thead>`;
+    $("abl-alpha").innerHTML = head("alpha") + "<tbody>" + a.alpha.map(row("alpha", (x) => x.toFixed(2))).join("") + "</tbody>";
+    $("abl-conf").innerHTML = head("threshold") + "<tbody>" + a.confidence_threshold.map(row("confidence_threshold", (x) => x.toFixed(2))).join("") + "</tbody>";
+    $("abl-cache").innerHTML = `<thead><tr><th>threshold</th><th>How-to hits</th><th>Wrong FAQ</th><th>False hits (of 150)</th></tr></thead><tbody>` +
+      a.cache_threshold.map((r) => `<tr><td class="num">${r.threshold.toFixed(2)}</td><td class="num">${pct(r.howto_hit_rate, 0)}</td><td class="num">${r.howto_hits_wrong_faq}</td><td class="num">${r.false_hits_on_non_howto ? `<span class="chip no">${r.false_hits_on_non_howto}</span>` : `<span class="chip ok">0</span>`}</td></tr>`).join("") + "</tbody>";
+    const e = DATA.error_analysis;
+    const causes = ["UNGROUNDED_REPLY", "ESCALATION_ERROR", "WRONG_TOOL_ARGS", "WRONG_ROOT_CAUSE"];
+    const pols = ["single:small", "single:mid", "single:frontier", "static_router", "cascade"];
+    $("errors").innerHTML = `<thead><tr><th>Policy</th>${causes.map((c) => `<th>${c.replace(/_/g, " ").toLowerCase()}</th>`).join("")}<th>Total</th></tr></thead><tbody>` +
+      pols.map((p) => `<tr><td>${short[p]}</td>${causes.map((c) => `<td class="num">${e[p].true_silent_errors[c] || 0}</td>`).join("")}<td class="num"><b>${e[p].n_true_silent}</b></td></tr>`).join("") + "</tbody>";
+  }
+
+  // ------------------------------------------------------------------ explorer
+  const EXP = DATA.explorer;
+  const EXP_POL = ["single:frontier", "cascade+cache", "single:small", "static_router"];
+  const fp = $("f-policy");
+  fp.innerHTML = EXP_POL.map((p) => `<option value="${p}">${L[p].replace(" (baseline)", "")}</option>`).join("");
+  fp.value = "cascade+cache";
+  let current = null;
+  const catLabel = { PASS: ["ok", "pass"], SILENT_ERROR: ["no", "wrong"], HANDOFF: ["mid", "hand-off"] };
+  function disagree(run) { return run.category !== "HANDOFF" && run.judge && run.human != null && ((run.judge.factual_faithfulness === 2) !== (run.human === 2)); }
+  function renderList() {
+    const st = $("f-stratum").value, pol = fp.value, oc = $("f-outcome").value;
+    const rows = EXP.filter((c) => (!st || c.stratum === st) && (!oc || (oc === "DISAGREE" ? disagree(c.runs[pol]) : c.runs[pol].category === oc)));
+    $("f-count").textContent = `${rows.length} of ${EXP.length} cases`;
+    $("caselist").innerHTML = rows.map((c) => { const r = c.runs[pol]; const [cls, lab] = catLabel[r.category];
+      return `<button type="button" class="case" role="listitem" data-id="${c.id}" aria-current="${c.id === current}"><span class="id">${c.id}</span><span class="chip ${cls}">${lab}</span><span class="q">${esc(c.query)}</span></button>`; }).join("");
+    if (!rows.find((c) => c.id === current) && rows.length) select(rows[0].id); else if (!rows.length) $("detail").innerHTML = `<p class="note">No cases match these filters.</p>`;
+  }
+  $("caselist").addEventListener("click", (e) => { const b = e.target.closest(".case"); if (b) select(b.dataset.id); });
+  ["f-stratum", "f-policy", "f-outcome"].forEach((id) => $(id).addEventListener("change", renderList));
+  function select(id) {
+    current = id;
+    document.querySelectorAll(".case").forEach((b) => b.setAttribute("aria-current", String(b.dataset.id === id)));
+    const c = EXP.find((x) => x.id === id);
+    const ex = c.expected;
+    const tool = ex.expected_tool_call ? `${ex.expected_tool_call.name}(${Object.entries(ex.expected_tool_call.args).map(([k, v]) => `${k}=${v}`).join(", ")})` : "no tool";
+    let h = `<div><div class="eyebrow">${c.id} · ${c.stratum.replace("_", "-")} · ${esc(c.scenario)} · merchant ${c.merchant}</div></div>
+      <div class="quote">${esc(c.query)}</div>
+      <div class="ctx">${c.context.map((k) => `<div><b>[${esc(k.id)}]</b> ${esc(k.text)}</div>`).join("")}</div>
+      <dl class="kv"><dt>Expected root cause</dt><dd>${ex.expected_root_cause}</dd><dt>Expected tool call</dt><dd style="white-space:normal;overflow-wrap:anywhere">${esc(tool)}</dd><dt>Must escalate</dt><dd>${ex.must_escalate ? "yes" : "no"}</dd><dt>Required citations</dt><dd>${ex.required_citations.join(", ") || "none"}</dd></dl>
+      <div class="runs">`;
+    for (const p of EXP_POL) {
+      const r = c.runs[p]; const [cls, lab] = catLabel[r.category];
+      const path = r.cache ? `<span class="t">cache hit</span>` : r.tiers.map((t, i) => `<span class="t ${r.flags[i] && r.flags[i].length ? "flag" : ""}" title="${(r.flags[i] || []).join(", ")}">${t}${r.flags[i] && r.flags[i].length ? " ⚑" : ""}</span>`).join("→") + (r.category === "HANDOFF" ? "→<span class=\"t\">human</span>" : "");
+      const flags = r.flags.map((f, i) => f.length ? `${r.tiers[i]}: ${f.join(", ")}` : null).filter(Boolean).join(" · ");
+      const o = r.output;
+      h += `<div class="run ${r.category}"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${L[p].replace(" (baseline)", "")}</b><span class="chip ${cls}">${lab}${r.error ? " · " + r.error.toLowerCase().replace(/_/g, " ") : ""}</span></div>
+        <div class="path">${path}</div>
+        ${r.risk && r.risk.length ? `<div class="note">Risk rules: ${r.risk.join(", ")}</div>` : ""}
+        ${flags ? `<div class="note">Validator: ${esc(flags)}</div>` : ""}
+        ${o ? `<pre>${esc(o.root_cause_code)}${o.tool_call ? "\n" + esc(o.tool_call.name + "(" + Object.entries(o.tool_call.args).map(([k, v]) => k + "=" + v).join(", ") + ")") : ""}${o.escalate_to_human ? "\nescalate_to_human" : ""}\n\n${esc(o.customer_reply)}</pre>` : `<p class="note">No trusted answer. Sent to a human with all attempts attached.</p>`}
+        <div class="note mono">${r.latency.toFixed(0)} ms · $${(r.cost * 1000).toFixed(3)} per 1k${r.judge ? ` · judge ${r.judge.factual_faithfulness}/2 · human ${r.human}/2` : ""}</div></div>`;
+    }
+    $("detail").innerHTML = h + "</div>";
+  }
+
+  let rw = 0;
+  window.addEventListener("resize", () => { const w = window.innerWidth; if (w !== rw) { rw = w; schedule(); } });
+
+  // ------------------------------------------------------------------ boot
+  reset();
+  evalSection();
+  ablations();
+  renderList();
+})();
+</script>

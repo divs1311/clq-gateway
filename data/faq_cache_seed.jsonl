@@ -1,0 +1,25 @@
+{"faq_id": "faq_warehouse", "question": "How do I add a new warehouse?", "answer": "Go to Settings > Warehouses > Add warehouse, enter the address, and set it as a stock source.", "kb_id": "faq_warehouse"}
+{"faq_id": "faq_reconnect", "question": "How do I reconnect my channel account?", "answer": "Open Settings > Integrations, choose the channel, click Reconnect and sign in to the channel again.", "kb_id": "faq_reconnect"}
+{"faq_id": "faq_order_status", "question": "How do I change the default order status?", "answer": "Set it in Settings > Orders > Default status.", "kb_id": "faq_order_status"}
+{"faq_id": "faq_invoice", "question": "How do I set up automatic invoices?", "answer": "Enable 'Issue invoice on payment' in Settings > Invoicing and choose a numbering series.", "kb_id": "faq_invoice"}
+{"faq_id": "faq_bulk_price", "question": "How do I bulk edit prices?", "answer": "Select the products in Products, then Bulk actions > Change price, using a fixed amount or a percentage.", "kb_id": "faq_bulk_price"}
+{"faq_id": "faq_users", "question": "How do I add a new user?", "answer": "Use Settings > Users > Invite user and assign a permission role.", "kb_id": "faq_users"}
+{"faq_id": "faq_export", "question": "How do I export orders to CSV?", "answer": "Filter the list in Orders, then click Export > CSV.", "kb_id": "faq_export"}
+{"faq_id": "faq_courier", "question": "How do I set courier rules?", "answer": "Create a rule in Shipping > Automation rules > New rule, choose the conditions and the courier.", "kb_id": "faq_courier"}
+{"faq_id": "faq_currency", "question": "How do I enable a new currency?", "answer": "Go to Settings > Currencies > Add currency.", "kb_id": "faq_currency"}
+{"faq_id": "faq_bundle", "question": "How do I create a product bundle?", "answer": "In Products > Add product choose type 'Bundle' and add the component SKUs and quantities.", "kb_id": "faq_bundle"}
+{"faq_id": "faq_status_map", "question": "How do I map order statuses to channel statuses?", "answer": "Use Settings > Integrations > select the channel > Status mapping.", "kb_id": "faq_status_map"}
+{"faq_id": "faq_low_stock", "question": "How do I set low stock alerts?", "answer": "Set a threshold in Products > Inventory > Alerts, per SKU or globally.", "kb_id": "faq_low_stock"}
+{"faq_id": "faq_new_channel", "question": "How do I connect a new sales channel?", "answer": "Go to Settings > Integrations > Add integration, choose the channel and sign in.", "kb_id": "faq_new_channel"}
+{"faq_id": "faq_sync_freq", "question": "Can I change the stock sync frequency?", "answer": "Stock sync runs every 15 minutes and the interval cannot be changed per account.", "kb_id": "faq_sync_freq"}
+{"faq_id": "faq_labels", "question": "How do I print shipping labels in bulk?", "answer": "Select the orders in Orders, then Print > Shipping labels.", "kb_id": "faq_labels"}
+{"faq_id": "faq_tax", "question": "How do I set tax rates?", "answer": "Add the rate in Settings > Taxes > Add rate and assign it to the product tax class.", "kb_id": "faq_tax"}
+{"faq_id": "faq_archive", "question": "How do I archive old orders?", "answer": "Filter by date in Orders, then Bulk actions > Archive; archived orders stay searchable.", "kb_id": "faq_archive"}
+{"faq_id": "faq_returns", "question": "How do I create a return?", "answer": "Open the order and click Create return, then choose the items and reason.", "kb_id": "faq_returns"}
+{"faq_id": "faq_custom_field", "question": "How do I add a custom order field?", "answer": "Use Settings > Orders > Custom fields > Add field.", "kb_id": "faq_custom_field"}
+{"faq_id": "faq_buyer_email", "question": "How do I set up buyer email notifications?", "answer": "Enable templates per order status in Settings > Notifications > Buyer emails.", "kb_id": "faq_buyer_email"}
+{"faq_id": "faq_timezone", "question": "How do I change the account time zone?", "answer": "Change it in Settings > Account > Time zone.", "kb_id": "faq_timezone"}
+{"faq_id": "faq_duplicate_listing", "question": "How do I duplicate a listing to another channel?", "answer": "Select the listing in Listings, click Duplicate to channel and choose the target channel.", "kb_id": "faq_duplicate_listing"}
+{"faq_id": "faq_2fa", "question": "How do I turn on two-factor authentication?", "answer": "Go to Profile > Security > Enable 2FA and scan the QR code with an authenticator app.", "kb_id": "faq_2fa"}
+{"faq_id": "faq_api_token", "question": "How do I generate an API token?", "answer": "Use Settings > API > Generate token; it is shown once, so store it securely.", "kb_id": "faq_api_token"}
+{"faq_id": "faq_delete_product", "question": "How do I delete a product?", "answer": "Use Products > select the product > More > Delete; products with open orders cannot be deleted.", "kb_id": "faq_delete_product"}
